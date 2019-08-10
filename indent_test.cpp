@@ -77,6 +77,7 @@ void indent_demo()
 
 int main()
 {
+  indent_facet::indent_chars = "  ";
   trivial();
   indent_demo();
 

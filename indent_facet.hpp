@@ -5,11 +5,13 @@
 #include <iostream>
 #include <iomanip>
 #include <cassert>
-
+#include <string>
 
 
 class indent_facet : public std::codecvt<char, char, std::mbstate_t> {
 public:
+	static std::string indent_chars;
+
 	explicit indent_facet( int indent_level, size_t ref = 0)
 		: std::codecvt<char, char, std::mbstate_t>(ref), m_indentation_level(indent_level) {}
 	typedef std::codecvt_base::result result;
@@ -31,8 +33,9 @@ protected:
 		return m_indentation_level==0;
 	}
 	int m_indentation_level = 0;
-
 };
+
+std::string indent_facet::indent_chars("\t");
 
 inline indent_facet::result indent_facet::do_out(state_type &need_indentation,
 	const intern_type *from, const intern_type *from_end, const intern_type *&from_next,
@@ -48,7 +51,9 @@ inline indent_facet::result indent_facet::do_out(state_type &need_indentation,
 			res = std::codecvt_base::ok;
 			state(need_indentation) = 1;
 			for(int i=0; i<m_indentation_level; ++i){
-				*to = '\t'; ++to;
+				for(char c : indent_chars) {
+					*to = c; ++to;
+				}
 			}
 			if (to == to_end) {
 				res = std::codecvt_base::partial;
